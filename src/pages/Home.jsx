@@ -1,29 +1,38 @@
-import axios from "axios";
-import React, { useState, useEffect } from "react";
-import {useDispatch,useSelector} from 'react-redux'
-import {add} from '../Redux/Createslice'
+// import axios from "axios";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
+import {add} from '../Redux/Createslice';
+import {fetchProducts, mystatus} from '../Redux/ProductSlice'
 
 function Home() {
-  const uri = "https://fakestoreapi.com/products";
-  const [product, setproduct] = useState([]);
+//   const uri = "https://fakestoreapi.com/products";
+
+  const dispatch = useDispatch();
+  const {data:product,status} = useSelector((state)=> state.product);         /// here using data with name product
 
   useEffect(() => {
-    fetchAPI();
-  }, [uri, product]);
+   
+    dispatch(fetchProducts());
+  }, []);
 
-  const fetchAPI = async () => {
-    const data = await axios.get(uri);
-    setproduct(data.data);
+//   const fetchAPI = async () => {
+//     const data = await axios.get(uri);
+//     setproduct(data.data);
 
-  };
-  const dispose = useDispatch();
+//   };
 
   const addProduct = (item)=>{
-     dispose(add(item));
+     dispatch(add(item));
+  }
+
+  if(status === mystatus.LOADING){
+    return <h3>Fetching data.....</h3>
   }
 
   return (
     <div className="productsWrapper">
+
       {product.map((prod, index) => (
         <div className="card" key={index}>
           <img src={prod.image} alt="prod" />
